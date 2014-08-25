@@ -14,7 +14,7 @@ var MapPainter = cc.Class.extend({
 
     ctor: function ( layer ) {
         this.layer = layer;
-        cc.spriteFrameCache.addSpriteFrames( res.Tile_plist );
+        //cc.spriteFrameCache.addSpriteFrames( res.Tile_plist );
     },
 
     setParam: function( param ) {
@@ -74,12 +74,6 @@ var MapPainter = cc.Class.extend({
     },
 
     getTileImg: function( tile ) {
-        var ret = "Grass0.png";
-        switch ( tile ) {
-            case "TREES":
-                ret = "Tree0.png";
-                break;
-        }
-        return ret;
+        return Def.TILE2IMG[tile];
     }
 });
