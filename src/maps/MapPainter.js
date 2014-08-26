@@ -14,7 +14,6 @@ var MapPainter = cc.Class.extend({
 
     ctor: function ( layer ) {
         this.layer = layer;
-        //cc.spriteFrameCache.addSpriteFrames( res.Tile_plist );
     },
 
     setParam: function( param ) {
@@ -41,6 +40,14 @@ var MapPainter = cc.Class.extend({
                 this.grids[i] = this.grids[i] || [];
                 this.grids[i][j] = { x:i, y:j };
             }
+        }
+        if( this.rawData["thiefPos"] ) {
+            var d = this.rawData["thiefPos"];
+            this.grids[d.x][d.y].thief = true;
+        }
+        for( var i in this.rawData["moneyPos"] ){
+            var d = this.rawData["moneyPos"][i];
+            this.grids[d.x][d.y].money = true;
         }
         for( var i in this.rawData["gridsData"] ){
             var d = this.rawData["gridsData"][i];

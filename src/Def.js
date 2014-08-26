@@ -12,6 +12,8 @@ Def.TILE2IMG = {
     GRASS: "Grass0.png",
     TREES: "Tree0.png"
 };
+Def.THIEF = 1;
+Def.GUARD = 2;
 Def.UP = 1;
 Def.DOWN = 2;
 Def.LEFT = 3;
