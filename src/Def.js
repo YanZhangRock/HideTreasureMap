@@ -12,6 +12,12 @@ Def.TILE2IMG = {
     GRASS: "Grass0.png",
     TREES: "Tree0.png"
 };
+Def.OBJ2IMG = {
+    "THIEF": "thief.png",
+    "GUARD": "guard.png",
+    "MONEY": "money.png",
+    "TRAP": "trap.png"
+};
 Def.THIEF = 1;
 Def.GUARD = 2;
 Def.UP = 1;

@@ -62,11 +62,11 @@ var MapTile = cc.Class.extend({
     },
 
     _createObjs: function() {
-        var imgs = ["thief.png", "money.png"];
         var names = ["THIEF", "MONEY"]
-        for( var i in imgs ) {
-            var imgName = imgs[i];
-            var img = "#" + imgs[i];
+        for( var i in names ) {
+            var name = names[i];
+            var imgName = Def.OBJ2IMG[name];
+            var img = "#" + Def.OBJ2IMG[name];
             var tileBtn = new cc.Sprite( img );
             tileBtn.attr({
                 x: g_size.width * MapTile.ORI_GRID.x + ( Def.GRID_SIZE + MapTile.EDGE ) * i,
@@ -74,8 +74,8 @@ var MapTile = cc.Class.extend({
                 anchorX: 0.5,
                 anchorY: 0.5
             });
-            this.tile2Img[names[i]] = imgName;
-            this.tile2Btn[names[i]] = tileBtn;
+            this.tile2Img[name] = imgName;
+            this.tile2Btn[name] = tileBtn;
             this.layer.addChild( tileBtn );
             cc.eventManager.addListener(this.listener.clone(), tileBtn);
         }

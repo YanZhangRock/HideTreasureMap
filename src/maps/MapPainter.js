@@ -61,10 +61,11 @@ var MapPainter = cc.Class.extend({
         var mapImg = cc.textureCache.addImage(res.Tile_png);
         var batchNode = new cc.SpriteBatchNode(mapImg, 200);
         this.mapBatch = batchNode;
-        this.layer.addChild( batchNode, this.zOrder );
+        this.layer.addChild( batchNode, this.zOrder+MapPainter.Z.TILE );
         for( var i=0; i<this.grids.width; i++ ) {
             for( var j=0; j<this.grids.height; j++) {
                 var grid = this.grids[i][j];
+                // draw tile
                 var sprite = new cc.Sprite( "#"+this.getTileImg( grid.tile ) );
                 grid.sprite = sprite;
                 var pos = Util.grid2World( grid );
@@ -76,6 +77,32 @@ var MapPainter = cc.Class.extend({
                     scale: Def.GRID_SCALE
                 });
                 batchNode.addChild( sprite );
+                // draw money
+                if( grid.money ) {
+                    var money = new cc.Sprite( "#"+Def.OBJ2IMG["MONEY"] );
+                    money.attr({
+                        anchorX: 0.5,
+                        anchorY: 0.5,
+                        x: pos.x,
+                        y: pos.y,
+                        scale: Def.GRID_SCALE
+                    });
+                    grid.money = money;
+                    this.layer.addChild( money, this.zOrder+MapPainter.Z.OBJ );
+                }
+                // draw thief
+                if( grid.thief ) {
+                    var thief = new cc.Sprite( "#"+Def.OBJ2IMG["THIEF"] );
+                    thief.attr({
+                        anchorX: 0.5,
+                        anchorY: 0.5,
+                        x: pos.x,
+                        y: pos.y,
+                        scale: Def.GRID_SCALE
+                    });
+                    grid.thief = thief;
+                    this.layer.addChild( thief, this.zOrder+MapPainter.Z.OBJ );
+                }
             }
         }
     },
@@ -84,3 +111,7 @@ var MapPainter = cc.Class.extend({
         return Def.TILE2IMG[tile];
     }
 });
+
+MapPainter.Z = {
+    TILE: 0, OBJ: 1
+}
