@@ -15,6 +15,10 @@ var MapEditor = cc.Class.extend({
             this._addThief( grid, img );
         } else if( tile == "MONEY" ) {
             this._addMoney( grid, img );
+        } else if ( tile == "GUARD" ) {
+            this._addGuard( grid, img )
+        } else if ( tile == "TRAP" ) {
+            this._addTrap( grid, img );
         } else {
             this._changeTile( grid, tile, img );
         }
@@ -22,6 +26,7 @@ var MapEditor = cc.Class.extend({
 
     _changeTile: function( pos, tile, img ) {
         var grid = this.layer.grids[pos.x][pos.y];
+        if( this.gridHasObj( grid ) ) return;
         var frame = cc.spriteFrameCache.getSpriteFrame(img);
         grid.sprite.setSpriteFrame( frame );
         grid.tile = tile;
@@ -34,7 +39,7 @@ var MapEditor = cc.Class.extend({
             this.thief = null;
             return;
         }
-        if( grid.money ) return;
+        if( this.gridHasObj( grid ) ) return;
         if( grid.tile == "TREES" ) return;
         if( this.thief ) return;
         var p = Util.grid2World( grid );
@@ -57,7 +62,7 @@ var MapEditor = cc.Class.extend({
             grid.money = null;
             return;
         }
-        if( grid.thief ) return;
+        if( this.gridHasObj( grid ) ) return;
         if( grid.tile == "TREES" ) return;
         var p = Util.grid2World( grid );
         var money = new cc.Sprite( "#"+img );
@@ -70,6 +75,54 @@ var MapEditor = cc.Class.extend({
         });
         this.layer.addChild( money, MainLayer.Z.OBJ );
         grid.money = money;
-        this.money = money;
+    },
+
+    _addGuard: function( grid, img ) {
+        if( grid.guard ) {
+            this.layer.removeChild( grid.guard );
+            grid.guard = null;
+            return;
+        }
+        if( this.gridHasObj( grid ) ) return;
+        if( grid.tile == "TREES" ) return;
+        var p = Util.grid2World( grid );
+        var guard = new cc.Sprite( "#"+img );
+        guard.attr({
+            anchorX: 0.5,
+            anchorY: 0.5,
+            x: p.x,
+            y: p.y,
+            scale: Def.GRID_SCALE
+        });
+        this.layer.addChild( guard, MainLayer.Z.OBJ );
+        grid.guard = guard;
+    },
+
+    _addTrap: function( grid, img ) {
+        if( grid.trap ) {
+            this.layer.removeChild( grid.trap );
+            grid.trap = null;
+            return;
+        }
+        if( this.gridHasObj( grid ) ) return;
+        if( grid.tile == "TREES" ) return;
+        var p = Util.grid2World( grid );
+        var trap = new cc.Sprite( "#"+img );
+        trap.attr({
+            anchorX: 0.5,
+            anchorY: 0.5,
+            x: p.x,
+            y: p.y,
+            scale: Def.GRID_SCALE
+        });
+        this.layer.addChild( trap, MainLayer.Z.OBJ );
+        grid.trap = trap;
+    },
+
+    gridHasObj: function( grid ) {
+        if( grid.thief || grid.money || grid.guard || grid.trap ) {
+            return true;
+        }
+        return false;
     }
 });

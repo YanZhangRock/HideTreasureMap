@@ -3,8 +3,10 @@
  */
 
 var MainLayer = cc.Layer.extend({
+    mapFileIO: null,
     mapPainter: null,
     mapTile: null,
+    objTile: null,
     mapEditor: null,
     grids: {},
     thief: null,
@@ -22,8 +24,16 @@ var MainLayer = cc.Layer.extend({
 
     ctor: function () {
         this._super();
+        // score label
+        var label = new cc.LabelTTF("得分：", "Arial", 40);
+        label.x = g_size.width * 0.2;
+        label.y = g_size.height * 0.94;
+        this.testLabel = label;
+        this.addChild( label, MainLayer.Z.UI );
+        this._initMapFileIO();
         this._initMapPainter();
         this._initMapTile();
+        this._initObjTile();
         this._initMapEditor();
         this._createCurTile();
         this._createListener();
@@ -34,6 +44,11 @@ var MainLayer = cc.Layer.extend({
         this.mapPainter.drawMap();
         this.grids = this.mapPainter.getGrids();
         //this.testLabel.setString(str);
+    },
+
+    _initMapFileIO: function() {
+        this.mapFileIO = new MapFileIO( this );
+        this.mapFileIO.loadFileList();
     },
 
     _initMapPainter: function() {
@@ -48,6 +63,11 @@ var MainLayer = cc.Layer.extend({
     _initMapTile: function() {
         this.mapTile = new MapTile( this, MainLayer.Z.UI );
         this.mapTile.createTiles();
+    },
+
+    _initObjTile: function() {
+        this.objTile = new ObjTile( this, MainLayer.Z.UI );
+        this.objTile.createTiles();
     },
 
     _initMapEditor: function() {

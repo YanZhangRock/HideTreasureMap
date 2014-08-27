@@ -15,9 +15,11 @@
         "src/app.js",
         "src/Def.js",
         "src/Util.js",
+        "src/maps/MapFileIO.js",
         "src/MainLayer.js",
         "src/maps/MapTile.js",
         "src/maps/MapEditor.js",
-        "src/maps/MapPainter.js"
+        "src/maps/MapPainter.js",
+        "src/objs/ObjTile.js"
     ]
 }
