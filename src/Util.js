@@ -20,3 +20,32 @@ Util.loadJsonFile = function( file ) {
     var txt = cc.loader._loadTxtSync( file );
     return JSON.parse( txt );
 };
+
+Util.getHTML = function( url, callBack ) {
+    var xhr = cc.loader.getXMLHttpRequest();
+    xhr.open( "GET", url );
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            if( callBack ) {
+                callBack( xhr.responseText );
+            }
+        }
+    };
+    xhr.send();
+};
+
+Util.postHTML = function( url, param, callBack ) {
+    var xhr = cc.loader.getXMLHttpRequest();
+    xhr.open( "POST", url, true );
+    //xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Content-type", "text/plain");
+    //xhr.setRequestHeader("Content-type", "text/plain; charset=utf-8" );
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            if( callBack ) {
+                callBack( xhr.responseText );
+            }
+        }
+    };
+    xhr.send( param );
+};

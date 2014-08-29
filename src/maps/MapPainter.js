@@ -9,11 +9,12 @@ var MapPainter = cc.Class.extend({
     zOrder: 0,
     mapName: "",
     rawData: null,
-    grids: null,
+    map: null,
     mapBatch: null,
 
     ctor: function ( layer ) {
         this.layer = layer;
+        this.map = layer.map;
     },
 
     setParam: function( param ) {
@@ -22,49 +23,15 @@ var MapPainter = cc.Class.extend({
         this.gridScale = param.gridScale || this.gridScale;
     },
 
-    getGrids: function() {
-        return this.grids;
-    },
-
-    loadMap: function( mapName ) {
-        this.mapName = mapName
-        this.rawData = Util.loadJsonFile( mapName );
-        this._initMap();
-    },
-
-    _initMap: function(){
-        this.owner = this.rawData.owner;
-        this.grids = {}
-        for( var i=0; i<this.rawData.width; i++) {
-            for( var j=0; j<this.rawData.height; j++ ) {
-                this.grids[i] = this.grids[i] || [];
-                this.grids[i][j] = { x:i, y:j };
-            }
-        }
-        if( this.rawData["thiefPos"] ) {
-            var d = this.rawData["thiefPos"];
-            this.grids[d.x][d.y].thief = true;
-        }
-        for( var i in this.rawData["moneyPos"] ){
-            var d = this.rawData["moneyPos"][i];
-            this.grids[d.x][d.y].money = true;
-        }
-        for( var i in this.rawData["gridsData"] ){
-            var d = this.rawData["gridsData"][i];
-            this.grids[d.x][d.y].tile = d["tile"];
-        }
-        this.grids.width = this.rawData.width;
-        this.grids.height = this.rawData.height;
-    },
-
     drawMap: function() {
         var mapImg = cc.textureCache.addImage(res.Tile_png);
         var batchNode = new cc.SpriteBatchNode(mapImg, 200);
         this.mapBatch = batchNode;
         this.layer.addChild( batchNode, this.zOrder+MapPainter.Z.TILE );
-        for( var i=0; i<this.grids.width; i++ ) {
-            for( var j=0; j<this.grids.height; j++) {
-                var grid = this.grids[i][j];
+        var grids = this.map.grids;
+        for( var i=0; i<this.map.width; i++ ) {
+            for( var j=0; j<this.map.height; j++) {
+                var grid = grids[i][j];
                 // draw tile
                 var sprite = new cc.Sprite( "#"+this.getTileImg( grid.tile ) );
                 grid.sprite = sprite;

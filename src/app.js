@@ -9,7 +9,7 @@ var MainScene = cc.Scene.extend({
         initRes();
         this.mainLayer = new MainLayer();
         this.addChild( this.mainLayer );
-        this.mainLayer.startGame();
+        //this.mainLayer.startGame();
     }
 });
 

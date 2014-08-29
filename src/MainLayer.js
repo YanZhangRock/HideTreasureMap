@@ -8,47 +8,78 @@ var MainLayer = cc.Layer.extend({
     mapTile: null,
     objTile: null,
     mapEditor: null,
-    grids: {},
+    map: null,
+    grids: null,
     thief: null,
     guards: [],
     moneys: [],
     traps: [],
-    testLabel: null,
+    remindLabel: null,
+    remindString: "",
     touchBaganLoc: null,
     mapBatch: null,
     objBatch: null,
     owner: "",
-    testString: "",
     curTile: {sprite: null, name: "", img: ""},
     gridMoved: null,
+    saveMapMenu: null,
 
     ctor: function () {
         this._super();
         // score label
-        var label = new cc.LabelTTF("得分：", "Arial", 40);
+        var label = new cc.LabelTTF("随便写写", "Arial", 40);
         label.x = g_size.width * 0.2;
         label.y = g_size.height * 0.94;
-        this.testLabel = label;
+        this.remindLabel = label;
         this.addChild( label, MainLayer.Z.UI );
-        this._initMapFileIO();
+        this._initMapData();
+        //Util.getHTML("http://minihugscorecenter.appspot.com/map?mid=1");
+        //Util.postHTML("http://minihugscorecenter.appspot.com/map?mid=1", "lalala");
+        //Util.postHTML("http://192.168.0.101:8888/map?mid=1", "l");
+    },
+
+    onLoadMapdata: function() {
+        this._initSaveUI();
         this._initMapPainter();
         this._initMapTile();
         this._initObjTile();
         this._initMapEditor();
         this._createCurTile();
         this._createListener();
+        this.startGame();
     },
 
     startGame: function() {
-        this.mapPainter.loadMap( MainLayer.MAP );
         this.mapPainter.drawMap();
-        this.grids = this.mapPainter.getGrids();
-        //this.testLabel.setString(str);
+        this.remindLabel.setString(this.map.owner);
     },
 
-    _initMapFileIO: function() {
-        this.mapFileIO = new MapFileIO( this );
-        this.mapFileIO.loadFileList();
+    onMapSaved: function() {
+        this.remindLabel.setString("保存成功");
+        this.schedule( function(){
+            this.remindLabel.setString("");
+        }, 1.5, 0 );
+    },
+
+    _initSaveUI: function() {
+        var label = new cc.LabelTTF("保存地图", "Arial", 40);
+        var self = this;
+        var save = new cc.MenuItemLabel( label,
+            function(){
+                self.map.saveMap( function(){self.onMapSaved();} );
+            }
+        );
+        var menu = new cc.Menu( save );
+        menu.x = g_size.width * 0.9;
+        menu.y = g_size.height * 0.8;
+        this.saveMapMenu = menu;
+        this.addChild( menu, MainLayer.Z.UI );
+    },
+
+    _initMapData: function() {
+        var self = this;
+        this.map = new MapData();
+        this.map.loadMap( function(){self.onLoadMapdata()} );
     },
 
     _initMapPainter: function() {
@@ -119,9 +150,10 @@ var MainLayer = cc.Layer.extend({
     onTouchBegan: function( touch ) {
         var l = touch.getLocation();
         var p = Util.world2Grid( l );
-        if( p.x < 0 || p.x > this.grids.width ||
-            p.y < 0 || p.y > this.grids.height ) return;
-        var grid = this.grids[p.x][p.y];
+        var map = this.map;
+        if( p.x < 0 || p.x > map.width ||
+            p.y < 0 || p.y > map.height ) return;
+        var grid = map.grids[p.x][p.y];
         this.gridMoved = grid;
         this.mapEditor.editMap( grid, this.curTile.name, this.curTile.img );
     },
@@ -129,9 +161,10 @@ var MainLayer = cc.Layer.extend({
     onTouchMoved: function( touch ) {
         var l = touch.getLocation();
         var p = Util.world2Grid( l );
-        if( p.x < 0 || p.x > this.grids.width ||
-            p.y < 0 || p.y > this.grids.height ) return;
-        var grid = this.grids[p.x][p.y];
+        var map = this.map;
+        if( p.x < 0 || p.x > map.width ||
+            p.y < 0 || p.y > map.height ) return;
+        var grid = map.grids[p.x][p.y];
         if( this.gridMoved && this.gridMoved == grid ) return;
         this.gridMoved = grid;
         this.mapEditor.editMap( grid, this.curTile.name, this.curTile.img );

@@ -25,7 +25,7 @@ var MapEditor = cc.Class.extend({
     },
 
     _changeTile: function( pos, tile, img ) {
-        var grid = this.layer.grids[pos.x][pos.y];
+        var grid = this.layer.map.grids[pos.x][pos.y];
         if( this.gridHasObj( grid ) ) return;
         var frame = cc.spriteFrameCache.getSpriteFrame(img);
         grid.sprite.setSpriteFrame( frame );
