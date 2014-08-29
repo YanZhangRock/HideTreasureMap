@@ -70,6 +70,32 @@ var MapPainter = cc.Class.extend({
                     grid.thief = thief;
                     this.layer.addChild( thief, this.zOrder+MapPainter.Z.OBJ );
                 }
+                // draw guard
+                if( grid.guard ) {
+                    var guard = new cc.Sprite( "#"+Def.OBJ2IMG["GUARD"] );
+                    guard.attr({
+                        anchorX: 0.5,
+                        anchorY: 0.5,
+                        x: pos.x,
+                        y: pos.y,
+                        scale: Def.GRID_SCALE
+                    });
+                    grid.guard = guard;
+                    this.layer.addChild( guard, this.zOrder+MapPainter.Z.OBJ );
+                }
+                // draw trap
+                if( grid.trap ) {
+                    var trap = new cc.Sprite( "#"+Def.OBJ2IMG["TRAP"] );
+                    trap.attr({
+                        anchorX: 0.5,
+                        anchorY: 0.5,
+                        x: pos.x,
+                        y: pos.y,
+                        scale: Def.GRID_SCALE
+                    });
+                    grid.trap = trap;
+                    this.layer.addChild( trap, this.zOrder+MapPainter.Z.OBJ );
+                }
             }
         }
     },

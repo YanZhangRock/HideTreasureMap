@@ -8,21 +8,16 @@ var MainLayer = cc.Layer.extend({
     mapTile: null,
     objTile: null,
     mapEditor: null,
+    mapIO: null,
+    objIO: null,
     map: null,
-    grids: null,
-    thief: null,
-    guards: [],
-    moneys: [],
-    traps: [],
     remindLabel: null,
     remindString: "",
     touchBaganLoc: null,
-    mapBatch: null,
-    objBatch: null,
-    owner: "",
     curTile: {sprite: null, name: "", img: ""},
     gridMoved: null,
     saveMapMenu: null,
+    saveObjsMenu: null,
 
     ctor: function () {
         this._super();
@@ -33,12 +28,18 @@ var MainLayer = cc.Layer.extend({
         this.remindLabel = label;
         this.addChild( label, MainLayer.Z.UI );
         this._initMapData();
+        this._initObjIO();
         //Util.getHTML("http://minihugscorecenter.appspot.com/map?mid=1");
         //Util.postHTML("http://minihugscorecenter.appspot.com/map?mid=1", "lalala");
         //Util.postHTML("http://192.168.0.101:8888/map?mid=1", "l");
     },
 
+    onLoadObjsData: function() {
+        this._initMapIO();
+    },
+
     onLoadMapdata: function() {
+        this.objIO.initObjs();
         this._initSaveUI();
         this._initMapPainter();
         this._initMapTile();
@@ -47,7 +48,9 @@ var MainLayer = cc.Layer.extend({
         this._createCurTile();
         this._createListener();
         this.startGame();
+
     },
+
 
     startGame: function() {
         this.mapPainter.drawMap();
@@ -55,18 +58,26 @@ var MainLayer = cc.Layer.extend({
     },
 
     onMapSaved: function() {
-        this.remindLabel.setString("保存成功");
+        this.remindLabel.setString("地图保存成功");
+        this.schedule( function(){
+            this.remindLabel.setString("");
+        }, 1.5, 0 );
+    },
+
+    onObjsSaved: function() {
+        this.remindLabel.setString("机关保存成功");
         this.schedule( function(){
             this.remindLabel.setString("");
         }, 1.5, 0 );
     },
 
     _initSaveUI: function() {
+        // save map label
         var label = new cc.LabelTTF("保存地图", "Arial", 40);
         var self = this;
         var save = new cc.MenuItemLabel( label,
             function(){
-                self.map.saveMap( function(){self.onMapSaved();} );
+                self.mapIO.saveMap( function(){self.onMapSaved();} );
             }
         );
         var menu = new cc.Menu( save );
@@ -74,12 +85,35 @@ var MainLayer = cc.Layer.extend({
         menu.y = g_size.height * 0.8;
         this.saveMapMenu = menu;
         this.addChild( menu, MainLayer.Z.UI );
+        // save objs label
+        var label = new cc.LabelTTF("保存机关", "Arial", 40);
+        var self = this;
+        var save = new cc.MenuItemLabel( label,
+            function(){
+                self.objIO.saveObjs( function(){self.onObjsSaved();} );
+            }
+        );
+        var menu = new cc.Menu( save );
+        menu.x = g_size.width * 0.9;
+        menu.y = g_size.height * 0.7;
+        this.saveObjsMenu = menu;
+        this.addChild( menu, MainLayer.Z.UI );
     },
 
     _initMapData: function() {
-        var self = this;
         this.map = new MapData();
-        this.map.loadMap( function(){self.onLoadMapdata()} );
+    },
+
+    _initMapIO: function() {
+        var self = this;
+        this.mapIO = new MapIO( this.map );
+        this.mapIO.loadMap( function(){self.onLoadMapdata()} );
+    },
+
+    _initObjIO: function() {
+        var self = this;
+        this.objIO = new ObjIO( this.map );
+        this.objIO.loadObjs( function(){self.onLoadObjsData()} );
     },
 
     _initMapPainter: function() {

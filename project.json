@@ -17,10 +17,12 @@
         "src/Utf8.js",
         "src/Util.js",
         "src/MainLayer.js",
+        "src/maps/MapIO.js",
         "src/maps/MapData.js",
         "src/maps/MapTile.js",
         "src/maps/MapEditor.js",
         "src/maps/MapPainter.js",
+        "src/objs/ObjIO.js",
         "src/objs/ObjTile.js"
     ]
 }

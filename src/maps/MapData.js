@@ -4,8 +4,6 @@
 
 
 var MapData = cc.Class.extend({
-    rawData: null,
-    saveData: null,
     owner: "",
     width: 0,
     height: 0,
@@ -13,6 +11,7 @@ var MapData = cc.Class.extend({
     loadMapCallBack: null,
     saveMapCallBack: null,
     mapid: 1,
+    userid: 1,
 
     ctor: function (layer) {
         this.layer = layer;
@@ -32,43 +31,9 @@ var MapData = cc.Class.extend({
         return theRequest;
     },
 
-    getMapURL: function() {
-        return MapData.MAP_URL+this.mapid;
-    },
-
-    getUserURL: function() {},
-
-    loadMap: function( callBack ) {
-        this.loadMapCallBack = callBack;
-        var self = this;
-        Util.getHTML( this.getMapURL(), function(txt){self.onLoadMap(txt)} );
-    },
-
-    onLoadMap: function( txt ) {
-        this.rawData = JSON.parse( txt );
-        this._unserializeMap()
-        if( this.loadMapCallBack ) {
-            this.loadMapCallBack();
-        }
-    },
-
-    saveMap: function( callBack ) {
-        this.saveMapCallBack = callBack;
-        this._serializeMap();
-        var self = this;
-        Util.postHTML( this.getMapURL(), JSON.stringify( this.saveData ),
-            function(){
-                self.saveMapCallBack();
-            }
-        );
-    },
-
-    saveObjs: function( callBack ) {},
-
-    _serializeMap: function() {
+    serializeMap: function() {
         var data = new Object();
-        //data.owner = this.owner;
-        data.owner = "岩哥";
+        data.owner = this.owner;
         data.width = this.width;
         data.height = this.height;
         data.thiefPos = {};
@@ -90,35 +55,74 @@ var MapData = cc.Class.extend({
                 );
             }
         }
-        this.saveData = data;
+        return data;
     },
 
-    _unserializeMap: function() {
-        this.owner = this.rawData.owner;
+    unserializeMap: function( rawData ) {
+        if( !rawData ) return;
+        this.owner = rawData.owner;
         var grids = {}
-        for( var i=0; i<this.rawData.width; i++) {
-            for( var j=0; j<this.rawData.height; j++ ) {
+        for( var i=0; i<rawData.width; i++) {
+            for( var j=0; j<rawData.height; j++ ) {
                 grids[i] = grids[i] || [];
                 grids[i][j] = { x:i, y:j };
             }
         }
-        if( this.rawData["thiefPos"] ) {
-            var d = this.rawData["thiefPos"];
+        if( rawData["thiefPos"] ) {
+            var d = rawData["thiefPos"];
             grids[d.x][d.y].thief = true;
         }
-        for( var i in this.rawData["moneyPos"] ){
-            var d = this.rawData["moneyPos"][i];
+        for( var i in rawData["moneyPos"] ){
+            var d = rawData["moneyPos"][i];
             grids[d.x][d.y].money = true;
         }
-        for( var i in this.rawData["gridsData"] ){
-            var d = this.rawData["gridsData"][i];
+        for( var i in rawData["gridsData"] ){
+            var d = rawData["gridsData"][i];
             grids[d.x][d.y].tile = d["tile"];
         }
-        this.width = this.rawData.width;
-        this.height = this.rawData.height;
+        this.width = rawData.width;
+        this.height = rawData.height;
         this.grids = grids;
+    },
+
+    serializeObjs: function() {
+        var data = new Object();
+        data.trapPos = [];
+        data.guardPos = [];
+        for( var i=0; i<this.width; i++ ) {
+            for (var j = 0; j < this.height; j++) {
+                var grid = this.grids[i][j];
+                if( grid.trap ) {
+                    data.trapPos.push(
+                        { x: i, y: j }
+                    );
+                }
+                if( grid.guard ) {
+                    data.guardPos.push(
+                        { x: i, y: j }
+                    );
+                }
+            }
+        }
+        return data;
+    },
+
+    unserializeObjs: function( rawData ) {
+        if( !rawData ) return;
+        var grids = this.grids;
+        if( rawData["trapPos"] ) {
+            for( var i in rawData["trapPos"] ){
+                var d = rawData["trapPos"][i];
+                grids[d.x][d.y].trap = true;
+            }
+        }
+        if( rawData["guardPos"] ) {
+            for( var i in rawData["guardPos"] ){
+                var d = rawData["guardPos"][i];
+                grids[d.x][d.y].guard = true;
+            }
+        }
     }
+
 })
 
-MapData.MAP_URL = "http://minihugscorecenter.appspot.com/map?mid=";
-MapData.USER_URL = "http://minihugscorecenter.appspot.com/user?";
