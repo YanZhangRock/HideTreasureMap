@@ -7,14 +7,13 @@ var ObjIO = cc.Class.extend({
     rawData: null,
     loadObjCallBack: null,
     saveObjCallBack: null,
-    uid: 1,
 
     ctor: function ( map ) {
         this.map = map;
     },
 
     getSaveURL: function() {
-        return ObjIO.URL+this.map.userid+"&name="+this.map.owner+"&mid="+this.map.mapid;
+        return ObjIO.URL+this.map.saveUserid+"&name="+this.map.owner+"&mid="+this.map.saveMapid;
     },
 
     getLoadURL: function() {
@@ -28,7 +27,7 @@ var ObjIO = cc.Class.extend({
     },
 
     onLoadObjs: function( txt ) {
-        if( txt == "null" ) return;
+        if( txt == "null\n" ) return;
         var idx = txt.indexOf("{");
         var pre = txt.substr( 0, idx );
         var content = txt.substr( idx );

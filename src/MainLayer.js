@@ -18,6 +18,7 @@ var MainLayer = cc.Layer.extend({
     gridMoved: null,
     saveMapMenu: null,
     saveObjsMenu: null,
+    msgNote: null,
 
     ctor: function () {
         this._super();
@@ -55,6 +56,7 @@ var MainLayer = cc.Layer.extend({
     startGame: function() {
         this.mapPainter.drawMap();
         this.remindLabel.setString(this.map.owner);
+        //this.createMsgNote();
     },
 
     onMapSaved: function() {
@@ -179,6 +181,19 @@ var MainLayer = cc.Layer.extend({
         this.curTile.img = img;
         var frame = cc.spriteFrameCache.getSpriteFrame(img);
         this.curTile.sprite.setSpriteFrame( frame );
+    },
+
+    createMsgNote: function() {
+        if( this.msgNote ) {
+            this.msgNote.attachWithIME();
+            return;
+        }
+        var msg = new cc.TextFieldTTF( "lalala", "Arial", 40 );
+        msg.x = g_size.width * 0.5;
+        msg.y = g_size.height * 0.94;
+        msg.attachWithIME();
+        this.msgNote = msg;
+        this.addChild( msg, MainLayer.Z.UI );
     },
 
     onTouchBegan: function( touch ) {

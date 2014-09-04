@@ -75,6 +75,7 @@ var MapEditor = cc.Class.extend({
         });
         this.layer.addChild( money, MainLayer.Z.OBJ );
         grid.money = money;
+        this.layer.createMsgNote();
     },
 
     _addGuard: function( grid, img ) {

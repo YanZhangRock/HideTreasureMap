@@ -11,14 +11,18 @@ var MapIO = cc.Class.extend({
         this.map = map;
     },
 
-    getURL: function() {
+    getLoadURL: function() {
         return MapIO.URL+this.map.mapid;
+    },
+
+    getSaveURL: function() {
+        return MapIO.URL+this.map.saveMapid;
     },
 
     loadMap: function( callBack ) {
         this.loadMapCallBack = callBack;
         var self = this;
-        Util.getHTML( this.getURL(), function(txt){self.onLoadMap(txt)} );
+        Util.getHTML( this.getLoadURL(), function(txt){self.onLoadMap(txt)} );
     },
 
     onLoadMap: function( txt ) {
@@ -33,7 +37,7 @@ var MapIO = cc.Class.extend({
         this.saveMapCallBack = callBack;
         var saveData = this.map.serializeMap();
         var self = this;
-        Util.postHTML( this.getURL(), JSON.stringify( saveData ),
+        Util.postHTML( this.getSaveURL(), JSON.stringify( saveData ),
             function(){
                 if( self.saveMapCallBack ) {
                     self.saveMapCallBack();
